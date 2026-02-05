@@ -1,0 +1,3 @@
+name: Teste 1
+expr: "*/10 * * * * *"
+stts: true
