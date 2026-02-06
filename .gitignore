@@ -37,6 +37,8 @@ yarn-error.log*
 
 go.work
 
+server/workflows/*
+
 # === IDE ===
 .idea/
 .vscode/
