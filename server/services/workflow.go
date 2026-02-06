@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -35,7 +36,35 @@ func (ws *WorkflowService) Execute(id string, expr string) error {
 	}
 
 	entryID, err := ws.scheduler.AddFunc(expr, func() {
-		fmt.Printf("[JOB %s] Executando tarefa do workflow...\n", id)
+		// Ler o arquivo conf.yaml a cada execução
+		path := filepath.Join("workflows", id, "conf.yaml")
+		data, err := os.ReadFile(path)
+		if err != nil {
+			fmt.Printf("[WORKFLOW %s] Erro ao ler conf.yaml: %v\n", id, err)
+			return
+		}
+
+		var workflow models.WorkflowResponse
+		if err := yaml.Unmarshal(data, &workflow); err != nil {
+			fmt.Printf("[WORKFLOW %s] Erro ao fazer parse do YAML: %v\n", id, err)
+			return
+		}
+
+		// Validar se há steps
+		if len(workflow.Steps) == 0 {
+			fmt.Printf("[WORKFLOW %s] Nenhum step configurado\n", id)
+			return
+		}
+
+		// Criar executor
+		srcPath := filepath.Join("workflows", id, "src")
+		executor := NewWorkflowExecutor(id, workflow.Steps)
+
+		// Executar com contexto (sem timeout global, deixar para os steps)
+		ctx := context.Background()
+		if err := executor.Execute(ctx, srcPath); err != nil {
+			fmt.Printf("[WORKFLOW %s] Erro na execução: %v\n", id, err)
+		}
 	})
 
 	if err != nil {
@@ -110,9 +139,10 @@ func (ws *WorkflowService) CreateWorkflow(req models.WorkflowRequest) (string, e
 	}
 
 	conf := models.WorkflowResponse{
-		Name: req.Name,
-		Expr: req.Expr,
-		Stts: true,
+		Name:  req.Name,
+		Expr:  req.Expr,
+		Stts:  true,
+		Steps: []models.Step{},
 	}
 
 	data, _ := yaml.Marshal(&conf)
@@ -304,4 +334,46 @@ func (ws *WorkflowService) isPathSafe(id string, filePath string) bool {
 	absSrcPath, _ := filepath.Abs(filepath.Join("workflows", id, "src"))
 
 	return filepath.HasPrefix(absFilePath, absSrcPath)
+}
+
+func (ws *WorkflowService) CreateFile(id string, filename string, content string) error {
+	path := filepath.Join("workflows", id, "conf.yaml")
+	if _, err := os.ReadFile(path); err != nil {
+		return fmt.Errorf("workflow não encontrado")
+	}
+
+	filePath := filepath.Join("workflows", id, "src", filename)
+
+	if !ws.isPathSafe(id, filePath) {
+		return fmt.Errorf("acesso negado")
+	}
+
+	if _, err := os.Stat(filePath); err == nil {
+		return fmt.Errorf("arquivo já existe")
+	}
+
+	if err := os.WriteFile(filePath, []byte(content), 0755); err != nil {
+		return fmt.Errorf("erro ao criar arquivo")
+	}
+
+	return nil
+}
+
+func (ws *WorkflowService) DeleteFile(id string, filename string) error {
+	path := filepath.Join("workflows", id, "conf.yaml")
+	if _, err := os.ReadFile(path); err != nil {
+		return fmt.Errorf("workflow não encontrado")
+	}
+
+	filePath := filepath.Join("workflows", id, "src", filename)
+
+	if !ws.isPathSafe(id, filePath) {
+		return fmt.Errorf("acesso negado")
+	}
+
+	if err := os.Remove(filePath); err != nil {
+		return fmt.Errorf("erro ao deletar arquivo")
+	}
+
+	return nil
 }

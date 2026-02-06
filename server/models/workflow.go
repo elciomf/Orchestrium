@@ -12,8 +12,17 @@ type WorkflowResponse struct {
 	Name string     `json:"name" yaml:"name"`
 	Expr string     `json:"expr" yaml:"expr"`
 	Stts bool       `json:"stts" yaml:"stts"`
+	Steps []Step   `json:"steps" yaml:"steps"`
 	Next *time.Time `json:"next,omitempty" yaml:"-"`
 	Prev *time.Time `json:"prev,omitempty" yaml:"-"`
+}
+
+type Step struct {
+	Name     string   `yaml:"name"`
+	Script   string   `yaml:"script"`
+	Depends  []string `yaml:"depends"`
+	Timeout  int      `yaml:"timeout"`
+	Attempts int      `yaml:"attempts"`
 }
 
 type FileRequest struct {

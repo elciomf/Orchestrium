@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -139,6 +140,68 @@ func (h *WorkflowHandler) UpdateFile(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":  "Arquivo atualizado com sucesso",
+		"id":       id,
+		"filename": filename,
+	})
+}
+
+func (h *WorkflowHandler) CreateFile(ctx *gin.Context) {
+	id := ctx.Param("id")
+	filename := ctx.Param("name")
+
+	var request gin.H
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	content, ok := request["content"].(string)
+	if !ok {
+		content = "#!/usr/bin/env python3\n# Novo script\n\nprint(\"Hello, World!\")\n"
+	}
+
+	normalizedFilename := strings.TrimSuffix(filename, ".py")
+	normalizedFilename += ".py"
+
+	if err := h.service.CreateFile(id, normalizedFilename, content); err != nil {
+		if err.Error() == "workflow não encontrado" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		if err.Error() == "acesso negado" {
+			ctx.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"message":  "Arquivo criado com sucesso",
+		"id":       id,
+		"filename": normalizedFilename,
+	})
+}
+
+func (h *WorkflowHandler) DeleteFile(ctx *gin.Context) {
+	id := ctx.Param("id")
+	filename := ctx.Param("name")
+
+	if err := h.service.DeleteFile(id, filename); err != nil {
+		if err.Error() == "workflow não encontrado" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		if err.Error() == "acesso negado" {
+			ctx.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":  "Arquivo deletado com sucesso",
 		"id":       id,
 		"filename": filename,
 	})
