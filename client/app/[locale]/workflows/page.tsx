@@ -1,7 +1,3 @@
-import { Actions } from "@/components/actions";
-import { Navbar } from "@/components/navbar";
-import { Badge } from "@/components/ui/badge";
-
 import {
   Table,
   TableBody,
@@ -11,6 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cron } from "@/lib/cron";
+import { Badge } from "@/components/ui/badge";
+import { Shortcut } from "@/components/shortcut";
+import type { Workflow } from "@/types/workflow";
+import Link from "next/link";
 
 export default async function Workflows({
   params,
@@ -25,15 +25,6 @@ export default async function Workflows({
       cache: "no-store",
     },
   );
-
-  type Workflow = {
-    id: string;
-    name: string;
-    expr: string;
-    next: string;
-    prev: string;
-    stts: boolean;
-  };
 
   const workflows: Workflow[] = await response.json();
 
@@ -54,7 +45,12 @@ export default async function Workflows({
           {workflows?.map((workflow: Workflow) => (
             <TableRow key={workflow.id}>
               <TableCell className="font-medium">
-                {workflow.name}
+                <Link
+                  href={`/workflows/${workflow.id}`}
+                  className="hover:underline"
+                >
+                  {workflow.name}
+                </Link>
               </TableCell>
               <TableCell>
                 <Badge
@@ -77,7 +73,7 @@ export default async function Workflows({
                 {workflow.prev}
               </TableCell>
               <TableCell className="text-right">
-                <Actions workflow={workflow} />
+                <Shortcut workflow={workflow} />
               </TableCell>
             </TableRow>
           ))}

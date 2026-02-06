@@ -1,14 +1,15 @@
-import { Timer } from "@/components/timer";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Editor } from "@/components/editor";
-import { Badge } from "@/components/ui/badge";
 import { Pencil } from "lucide-react";
+import { Timer } from "@/components/timer";
+import { Editor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
+import { Actions } from "@/components/actions";
+import type { Workflow } from "@/types/workflow";
 
 export default async function Workflow({
   params,
@@ -24,18 +25,13 @@ export default async function Workflow({
     },
   );
 
-  type Workflow = {
-    id: string;
-    name: string;
-    expr: string;
-    stts: boolean;
-    files: string[];
-  };
-
   const workflow: Workflow = await response.json();
 
   return (
-    <Tabs defaultValue="flow">
+    <Tabs
+      defaultValue="flow"
+      className="flex-1 overflow-hidden"
+    >
       <div className="pb-2 space-y-2">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-2">
@@ -46,17 +42,7 @@ export default async function Workflow({
               <Pencil />
             </Button>
           </div>
-          <Badge
-            className={`text-white
-              ${
-                workflow.stts
-                  ? "bg-blue-600 hover:bg-blue-600"
-                  : "bg-amber-600 hover:bg-amber-600"
-              }
-            `}
-          >
-            {workflow.stts ? "Active" : "Paused"}
-          </Badge>
+          <Actions workflow={workflow} />
         </div>
         <TabsList>
           <TabsTrigger value="flow">Flow</TabsTrigger>
@@ -73,7 +59,7 @@ export default async function Workflow({
           </div>
         </div>
       </TabsContent>
-      <TabsContent value="editor">
+      <TabsContent value="editor" className="flex">
         <Editor workflow={workflow} />
       </TabsContent>
     </Tabs>
