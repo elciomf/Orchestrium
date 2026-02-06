@@ -6,62 +6,36 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function Navbar() {
-  const pathname = usePathname();
-  const pathnames = pathname.split("/").filter((x) => x);
-
-  const langs = ["en", "es", "pt"];
-  const isLangPath =
-    pathnames.length > 0 && langs.includes(pathnames[0]);
-
-  const startIndex = isLangPath ? 1 : 0;
-
-  const displayPathnames = pathnames.slice(startIndex);
+  const pathnames = usePathname()
+    .split("/")
+    .filter((x) => x);
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="/">Home</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-
-        {displayPathnames.length > 0 && (
-          <BreadcrumbSeparator />
-        )}
-
-        {displayPathnames.map((value, index) => {
-          const realIndex = index + startIndex;
-          const to = `/${pathnames.slice(0, realIndex + 1).join("/")}`;
-
-          const isLast =
-            index === displayPathnames.length - 1;
-          const displayName = value.replace(/-/g, " ");
-
+        {pathnames.slice(1).map((value, index) => {
           return (
-            <React.Fragment key={to}>
+            <React.Fragment key={index}>
               <BreadcrumbItem>
-                {isLast ? (
-                  <BreadcrumbPage className="capitalize">
-                    {displayName}
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link href={to} className="capitalize">
-                      {displayName}
-                    </Link>
-                  </BreadcrumbLink>
-                )}
+                <BreadcrumbLink asChild>
+                  <Link
+                    href={`/${pathnames.slice(0, 1 + 1).join("/")}`}
+                  >
+                    {value.charAt(0).toUpperCase() +
+                      value.slice(1)}
+                  </Link>
+                </BreadcrumbLink>
               </BreadcrumbItem>
 
-              {!isLast && <BreadcrumbSeparator />}
+              {index !== pathnames.slice(1).length - 1 && (
+                <BreadcrumbSeparator />
+              )}
             </React.Fragment>
           );
         })}

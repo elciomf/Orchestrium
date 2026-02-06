@@ -1,6 +1,11 @@
 import "../globals.css";
+import Link from "next/link";
 import type { Metadata } from "next";
-
+import { Navbar } from "@/components/navbar";
+import { Toaster } from "@/components/ui/sonner";
+import { I18nProviderClient } from "@/locales/client";
+import { LayoutDashboard, Workflow } from "lucide-react";
+import { Theme, ThemeProvider } from "@/components/theme";
 import {
   Sidebar,
   SidebarContent,
@@ -15,16 +20,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Theme, ThemeProvider } from "@/components/theme";
-import { I18nProviderClient } from "@/locales/client";
-import {
-  House,
-  LayoutDashboard,
-  Workflow,
-} from "lucide-react";
-import Link from "next/link";
-import { Navbar } from "@/components/navbar";
-import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Orchestrium",
@@ -54,21 +49,12 @@ export default async function LocaleLayout({
                     Orchestrium.sh
                   </h1>
                 </SidebarHeader>
-
                 <SidebarContent>
                   <SidebarGroup>
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild>
                           <Link href="/">
-                            <House />
-                            <span>Home</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                          <Link href="/dashboard">
                             <LayoutDashboard />
                             <span>Dashboard</span>
                           </Link>
@@ -76,7 +62,6 @@ export default async function LocaleLayout({
                       </SidebarMenuItem>
                     </SidebarMenu>
                   </SidebarGroup>
-
                   <SidebarGroup>
                     <SidebarGroupLabel>
                       Resources
@@ -93,7 +78,6 @@ export default async function LocaleLayout({
                     </SidebarMenu>
                   </SidebarGroup>
                 </SidebarContent>
-
                 <SidebarFooter>
                   <Theme />
                 </SidebarFooter>
