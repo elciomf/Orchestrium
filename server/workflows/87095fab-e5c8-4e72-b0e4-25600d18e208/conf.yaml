@@ -1,3 +1,0 @@
-name: Teste 2
-expr: "*/5 * * * * *"
-stts: true
