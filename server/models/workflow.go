@@ -8,21 +8,21 @@ type WorkflowRequest struct {
 }
 
 type WorkflowResponse struct {
-	Id   string     `json:"id" yaml:"-"`
-	Name string     `json:"name" yaml:"name"`
-	Expr string     `json:"expr" yaml:"expr"`
-	Stts bool       `json:"stts" yaml:"stts"`
-	Steps []Step   `json:"steps" yaml:"steps"`
-	Next *time.Time `json:"next,omitempty" yaml:"-"`
-	Prev *time.Time `json:"prev,omitempty" yaml:"-"`
+	Id    string      `json:"id" yaml:"-"`
+	Name  string      `json:"name" yaml:"name"`
+	Expr  string      `json:"expr" yaml:"expr"`
+	Stts  bool        `json:"stts" yaml:"stts"`
+	Steps []Step      `json:"steps" yaml:"steps"`
+	Next  *time.Time  `json:"next,omitempty" yaml:"-"`
+	Prev  *time.Time  `json:"prev,omitempty" yaml:"-"`
 }
 
 type Step struct {
-	Name     string   `yaml:"name"`
-	Script   string   `yaml:"script"`
-	Depends  []string `yaml:"depends"`
-	Timeout  int      `yaml:"timeout"`
-	Attempts int      `yaml:"attempts"`
+	Name     string   `json:"name" yaml:"name"`
+	Script   string   `json:"script" yaml:"script"`
+	Depends  []string `json:"depends" yaml:"depends"`
+	Timeout  int      `json:"timeout" yaml:"timeout"`
+	Attempts int      `json:"attempts" yaml:"attempts"`
 }
 
 type FileRequest struct {

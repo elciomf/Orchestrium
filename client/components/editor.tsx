@@ -4,6 +4,7 @@ import React from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import type { Workflow } from "@/types/workflow";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   FileText,
   Loader2,
@@ -13,7 +14,6 @@ import {
   Check,
   FilePlusCorner,
 } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 type FileContent = {
   id: string;
@@ -115,7 +115,6 @@ export function Editor({
         );
       }
 
-      const data = await response.json();
       setOriginal(content);
       setHasChanges(false);
       toast("File saved successfully!");
@@ -137,7 +136,7 @@ export function Editor({
   };
 
   return (
-    <div className="flex-1 flex flex-row gap-4">
+    <div className="flex-1 flex gap-4">
       <div className="flex-4 flex flex-col rounded-lg border">
         {file ? (
           <>
@@ -261,9 +260,9 @@ export function Editor({
       </div>
 
       <div className="flex-1 flex flex-col rounded-lg border">
-        <div className="flex flex-row items-center justify-between px-4 py-3 border-b rounded-t-lg">
+        <div className="flex flex-row items-center justify-between px-4 py-3 border-b bg-muted/50 rounded-t-lg">
           <p className="text-sm font-semibold flex items-center gap-2">
-            <FileText className="h-4 w-4 text-neutral-400" />
+            <FileText className="h-4 w-4" />
             Files
             <span className="ml-auto text-xs  px-2 py-1 rounded">
               {workflow.files.length}

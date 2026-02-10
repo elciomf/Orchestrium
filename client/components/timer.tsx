@@ -1,11 +1,19 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { cron } from "@/lib/cron";
 import { Input } from "./ui/input";
+import { CircleQuestionMark, Clock } from "lucide-react";
+import { Field, FieldLabel } from "./ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Button } from "./ui/button";
-import { Check, CircleQuestionMark, X } from "lucide-react";
+import Link from "next/link";
 
 const RANGES = {
   sec: { min: 0, max: 59 },
@@ -187,85 +195,88 @@ export function Timer({
   };
 
   return (
-    <div className="w-full space-y-6">
-      <div className="flex items-center justify-between pb-4">
-        <div className="flex flex-row items-center gap-1">
-          {isValid ? (
-            <Check className="text-emerald-500" />
-          ) : (
-            <X className="text-rose-500" />
-          )}
-
-          <p className="text-lg">
-            {isValid
-              ? `Run ${cron(currentExpression, locale).toLowerCase()}`
-              : "Invalid values"}
-          </p>
-        </div>
-        <Button
-          asChild
-          size="icon"
-          variant="outline"
-          className="rounded-full"
-        >
+    <div className="flex-1 flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div className="flex flex-row items-center justify-between px-4 py-3 border-b bg-muted/50 rounded-t-lg">
+        <p className="text-sm font-semibold flex items-center gap-2">
+          <Clock className="h-4 w-4 text-primary" />
+          Cron Configuration
+        </p>
+        <Button variant={"ghost"} asChild>
           <Link
-            rel="noopener noreferrer"
             href={"https://crontab.guru/"}
-            title="Abrir crontab.guru"
             target="_blank"
+            rel="noopener noreferrer"
           >
-            <CircleQuestionMark className="h-5 w-5" />
+            <CircleQuestionMark />
           </Link>
         </Button>
       </div>
 
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
-          Configuração
-        </h3>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {fields.map(({ id, label, value, setter }) => (
-            <div key={id} className="flex flex-col gap-2">
-              <label
-                htmlFor={id}
-                className="text-xs font-medium text-gray-600 uppercase tracking-wide"
-              >
-                {label}
-              </label>
-              <Input
-                id={id}
-                value={value}
-                placeholder={id}
-                onChange={(e) => setter(e.target.value)}
-                className={`text-center text-sm transition-colors ${
-                  !isValidCronField(
-                    value,
-                    id as keyof typeof RANGES,
-                  )
-                    ? "border-red-500 bg-red-50 focus:border-red-600"
-                    : "border-gray-300 focus:border-blue-500"
-                }`}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <div className="flex-1 flex flex-col justify-between p-4 gap-4">
+        <div className="flex flex-col gap-4">
+          <div>
+            <strong>Running:</strong>
+            {isValid ? (
+              <p>
+                {cron(
+                  currentExpression,
+                  locale,
+                ).toLowerCase()}
+              </p>
+            ) : (
+              <p className="text-red-500">
+                Invalid cron expression
+              </p>
+            )}
+          </div>
 
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
-          Predefined expressions
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {PRESETS.map((preset) => (
-            <Button
-              size="sm"
-              key={preset.expr}
-              onClick={() => handlePresetClick(preset.expr)}
-            >
-              {preset.name}
-            </Button>
-          ))}
+          <Field>
+            <FieldLabel>Predefined expressions</FieldLabel>
+            <Select onValueChange={handlePresetClick}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a preset" />
+              </SelectTrigger>
+              <SelectContent position={"popper"}>
+                {PRESETS.map((preset) => (
+                  <SelectItem
+                    key={preset.expr}
+                    value={preset.expr}
+                  >
+                    {preset.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            {fields.map(({ id, label, value, setter }) => (
+              <Field key={id} className="space-y-1">
+                <FieldLabel htmlFor={id}>
+                  {label}
+                </FieldLabel>
+                <Input
+                  id={id}
+                  value={value}
+                  placeholder={id}
+                  onChange={(e) => setter(e.target.value)}
+                  className={`${
+                    !isValidCronField(
+                      value,
+                      id as keyof typeof RANGES,
+                    )
+                      ? "border-destructive focus-visible:ring-destructive"
+                      : ""
+                  }`}
+                />
+              </Field>
+            ))}
+          </div>
         </div>
+
+        <Button className="w-full mt-2">
+          Submit Configuration
+        </Button>
       </div>
     </div>
   );

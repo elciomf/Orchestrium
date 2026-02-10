@@ -46,6 +46,9 @@ func (h *WorkflowHandler) GetWorkflow(ctx *gin.Context) {
 		"name":  workflow.Name,
 		"expr":  workflow.Expr,
 		"stts":  workflow.Stts,
+		"steps": workflow.Steps,
+		"next":  workflow.Next,
+		"prev":  workflow.Prev,
 		"files": files,
 	})
 }

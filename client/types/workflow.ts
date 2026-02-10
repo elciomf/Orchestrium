@@ -1,9 +1,18 @@
-export type Workflow = {
+export interface Step {
+  name: string;
+  script: string;
+  depends: string[];
+  timeout: number;
+  attempts: number;
+}
+
+export interface Workflow {
   id: string;
   name: string;
   expr: string;
   stts: boolean;
-  next: string;
-  prev: string;
+  steps: Step[];
+  next?: string;
+  prev?: string;
   files: string[];
-};
+}

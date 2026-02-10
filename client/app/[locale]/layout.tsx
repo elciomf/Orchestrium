@@ -82,7 +82,7 @@ export default async function LocaleLayout({
                   <Theme />
                 </SidebarFooter>
               </Sidebar>
-              <Toaster position="top-right" />
+              <Toaster position="bottom-right" />
               <SidebarInset className="p-4 space-y-4">
                 <Navbar />
                 {children}

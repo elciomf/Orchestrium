@@ -1,3 +1,4 @@
+// page.tsx
 import {
   Tabs,
   TabsContent,
@@ -10,6 +11,7 @@ import { Editor } from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import { Actions } from "@/components/actions";
 import type { Workflow } from "@/types/workflow";
+import { Pipeline } from "@/components/pipeline";
 
 export default async function Workflow({
   params,
@@ -49,14 +51,13 @@ export default async function Workflow({
           <TabsTrigger value="editor">Editor</TabsTrigger>
         </TabsList>
       </div>
-      <TabsContent value="flow">
-        <div className="flex-1 flex flex-row gap-6">
-          <div className="flex-5 flex flex-col space-y-6">
-            <Timer
-              locale={locale}
-              expression={workflow.expr}
-            />
-          </div>
+      <TabsContent value="flow" className="flex">
+        <div className="flex-1 flex gap-4 h-full">
+          <Pipeline workflow={workflow} />
+          <Timer
+            locale={locale}
+            expression={workflow.expr}
+          />
         </div>
       </TabsContent>
       <TabsContent value="editor" className="flex">

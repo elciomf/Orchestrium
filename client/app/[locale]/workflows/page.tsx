@@ -6,11 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
 import { cron } from "@/lib/cron";
 import { Badge } from "@/components/ui/badge";
 import { Shortcut } from "@/components/shortcut";
 import type { Workflow } from "@/types/workflow";
-import Link from "next/link";
 
 export default async function Workflows({
   params,
