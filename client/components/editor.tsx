@@ -14,6 +14,7 @@ import {
   Check,
   FilePlusCorner,
 } from "lucide-react";
+import { Input } from "./ui/input";
 
 type FileContent = {
   id: string;
@@ -26,6 +27,8 @@ export function Editor({
 }: {
   workflow: Workflow;
 }) {
+  const [newFile, setNewFile] = React.useState(false);
+  const [newFilename, setNewFilename] = React.useState("");
   const [file, setFile] = React.useState<string | null>(
     null,
   );
@@ -268,7 +271,11 @@ export function Editor({
               {workflow.files.length}
             </span>
           </p>
-          <Button size={"icon"} variant={"ghost"}>
+          <Button
+            size={"icon"}
+            variant={"ghost"}
+            onClick={() => setNewFile(true)}
+          >
             <FilePlusCorner />
           </Button>
         </div>
@@ -290,6 +297,46 @@ export function Editor({
               <p className="px-3 py-8 text-center text-sm ">
                 No files yet
               </p>
+            )}
+            {newFile && (
+              <Input
+                autoFocus
+                placeholder="Enter the file name."
+                onChange={(event) =>
+                  setNewFilename(event.target.value)
+                }
+                onBlur={() => {
+                  setNewFile(false);
+                  setNewFilename("");
+                }}
+                onKeyDown={async (event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+
+                    try {
+                      await fetch(
+                        `/api/workflows/${workflow.id}/file/${newFilename}`,
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type":
+                              "application/json",
+                          },
+                        },
+                      );
+
+                      setNewFilename("");
+
+                      setNewFile(false);
+                    } catch (error) {
+                      console.error(
+                        "Failed to create file",
+                        error,
+                      );
+                    }
+                  }
+                }}
+              />
             )}
           </div>
         </ScrollArea>

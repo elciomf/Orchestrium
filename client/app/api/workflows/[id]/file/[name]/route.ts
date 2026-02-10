@@ -34,10 +34,7 @@ export async function GET(
       status: response.status,
     });
   } catch (error) {
-    console.error(
-      `Erro no proxy GET /workflows/:id/file/:name`,
-      error,
-    );
+    console.error(error);
     return NextResponse.json(
       { error: "Erro ao buscar arquivo do workflow" },
       { status: 500 },
@@ -94,12 +91,51 @@ export async function PATCH(
       status: response.status,
     });
   } catch (error) {
-    console.error(
-      `Erro no proxy PATCH /workflows/:id/file/:name`,
-      error,
-    );
+    console.error(error);
     return NextResponse.json(
       { error: "Erro ao atualizar arquivo do workflow" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{ id: string; name: string }>;
+  },
+) {
+  try {
+    const { id, name } = await params;
+
+    if (!name) {
+      return NextResponse.json(
+        { error: "Nome do arquivo é obrigatório" },
+        { status: 400 },
+      );
+    }
+
+    const response = await fetch(
+      `http://localhost:8080/workflows/${id}/file/${name}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    return NextResponse.json(data, {
+      status: response.status,
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Erro ao criar arquivo do workflow" },
       { status: 500 },
     );
   }

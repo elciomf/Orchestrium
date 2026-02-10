@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { FileText, Pause, Play } from "lucide-react";
+import { Pause, Play, ScrollText } from "lucide-react";
 import type { Workflow } from "@/types/workflow";
 
 export function Actions({
@@ -39,7 +39,7 @@ export function Actions({
 
       <Button asChild variant={"secondary"}>
         <Link href={`/workflows/${workflow.id}/logs`}>
-          <FileText /> Logs
+          <ScrollText /> Logs
         </Link>
       </Button>
     </div>

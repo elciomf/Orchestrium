@@ -6,9 +6,9 @@ import {
   Play,
   Pause,
   Trash2,
-  FileText,
   Copy,
   Files,
+  ScrollText,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -57,7 +57,7 @@ export function Shortcut({
             href={`/workflows/${workflow.id}/logs`}
             className="cursor-pointer w-full flex items-center"
           >
-            <FileText className="mr-2 h-4 w-4" />
+            <ScrollText className="mr-2 h-4 w-4" />
             <span>View logs</span>
           </Link>
         </DropdownMenuItem>
